@@ -1,0 +1,60 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+
+class MahasiswaNotifier extends StateNotifier<List<DocumentSnapshot>> {
+  MahasiswaNotifier() : super([]);
+
+  Stream<List<DocumentSnapshot>> streamData() {
+    return FirebaseFirestore.instance
+        .collection('mahasiswa')
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
+
+  Future<void> addMahasiswa(String npm, String nama, String prodi) async {
+    try {
+      await FirebaseFirestore.instance.collection('mahasiswa').add({
+        'npm': npm,
+        'nama': nama,
+        'prodi': prodi,
+      });
+    } on Exception catch (e) {
+      // TODO
+      print(e);
+    }
+  }
+
+  Future<void> deleteMahasiswa(String id) async {
+    try {
+      await FirebaseFirestore.instance.collection('mahasiswa').doc(id).delete();
+    } on Exception catch (e) {
+      // TODO
+      print(e);
+    }
+  }
+
+  Future<Map<String, dynamic>?> getData(String id) async {
+    try {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('mahasiswa')
+          .doc(id)
+          .get();
+      return doc.data() as Map<String, dynamic>?;
+    } catch (e) {
+      print("Error fetching data: $e");
+      return null;
+    }
+  }
+}
+
+final MahasiswaProvider =
+    StateNotifierProvider<MahasiswaNotifier, List<DocumentSnapshot>>((ref) {
+      return MahasiswaNotifier();
+    });
+
+final MahasiswaDataProvider =
+    FutureProvider.family<Map<String, dynamic>?, String>((ref, id) async {
+      final notifier = ref.read(MahasiswaProvider.notifier);
+      return await notifier.getData(id);
+    });
