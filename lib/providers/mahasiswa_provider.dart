@@ -46,6 +46,23 @@ class MahasiswaNotifier extends StateNotifier<List<DocumentSnapshot>> {
       return null;
     }
   }
+
+  Future<void> updateMahasiswa(
+    String npm,
+    String nama,
+    String prodi,
+    String id,
+  ) async {
+    try {
+      await FirebaseFirestore.instance.collection('mahasiswa').doc(id).update({
+        'npm': npm,
+        'nama': nama,
+        'prodi': prodi,
+      });
+    } catch (e) {
+      print("Error updating mahasiswa: $e");
+    }
+  }
 }
 
 final MahasiswaProvider =
@@ -55,6 +72,5 @@ final MahasiswaProvider =
 
 final MahasiswaDataProvider =
     FutureProvider.family<Map<String, dynamic>?, String>((ref, id) async {
-      final notifier = ref.read(MahasiswaProvider.notifier);
-      return await notifier.getData(id);
+      return ref.watch(MahasiswaProvider.notifier).getData(id);
     });
