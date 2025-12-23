@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project_mobile/providers/auth_provider.dart';
+import 'package:project_mobile/screens/auth/register_screen.dart';
+import 'package:project_mobile/screens/auth/reset_password_screen.dart';
 import 'package:project_mobile/screens/home/home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -56,7 +58,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ? CircularProgressIndicator()
                 : ElevatedButton(onPressed: doLogin, child: Text("Login")),
             SizedBox(height: 10),
-            TextButton(onPressed: () {}, child: Text("Reset Password")),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResetPasswordScreen(),
+                  ),
+                );
+              },
+              child: Text("Reset Password"),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -64,6 +76,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextButton(
                   onPressed: () {
                     // pindah ke halaman register
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
                   },
                   child: Text("Daftar Disini"),
                 ),

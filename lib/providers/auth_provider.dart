@@ -30,6 +30,45 @@ class AuthNotifier extends StateNotifier<User?> {
       }
     }
   }
+
+  Future<String?> register(String email, String pass) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: pass,
+      );
+      return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return "Password terlalu lemah.";
+      } else if (e.code == 'email-already-in-use') {
+        return "Email sudah terdaftar.";
+      } else {
+        return e.message;
+      }
+    }
+  }
+
+  Future<void> logout() async {
+    await _auth.signOut();
+  }
+
+  Future<String?> ResetPassword(String email) async {
+    if (email.isEmpty) {
+      return "Email tidak boleh kosong.";
+    }
+
+    if (!email.contains('@')) {
+      return "Format email tidak valid.";
+    }
+
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null;
+    } catch (e) {
+      return "Terjadi kesalahan saat mengirim email reset password.";
+    }
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, User?>(
